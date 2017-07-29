@@ -39,7 +39,7 @@ class Log(object):
 
     def __repr__(self):
         s = "Start            | End              | Category        | Description                   \n"
-        s += "-----------------|------------------|-----------------|-------------------------------\n"
+        s += "-----------------+------------------+-----------------+-------------------------------\n"
 
         for k, v in self._slices.items():
             start_str = v[0].start.strftime(self.DT_FMT)
@@ -64,18 +64,16 @@ class Log(object):
         c.execute('''CREATE TABLE IF NOT EXISTS log (id INTEGER PRIMARY KEY AUTOINCREMENT, start DATETIME, end DATETIME, category VARCHAR, description TEXT)''')
 
         for k, v in self._slices.items():
-            if v[1]:
-                break
-            
-            start_str = v[0].start.strftime(self.DT_FMT)
-            end_str = v[0].end.strftime(self.DT_FMT)
+            if not v[1]: # if not saved
+                start_str = v[0].start.strftime(self.DT_FMT)
+                end_str = v[0].end.strftime(self.DT_FMT)
 
-            data = (start_str, end_str, v[0].category, v[0].description)
+                data = (start_str, end_str, v[0].category, v[0].description)
             
-            c.execute('''INSERT INTO log (start, end, category, description) VALUES (?, ?, ?, ?)''', data)
-            conn.commit()
+                c.execute('''INSERT INTO log (start, end, category, description) VALUES (?, ?, ?, ?)''', data)
+                conn.commit()
 
-            v = (v[0], True)
+                v = (v[0], True) # set slice as saved
 
         conn.close()
 
@@ -96,3 +94,22 @@ class Log(object):
                            d[3], d[4]), True)
 
         conn.close()
+
+    def __len__(self):
+        length = 0
+        
+        for k, v in self._slices.items():
+            length += len(v[0])
+
+        return length
+
+    def category_aggregate(self):
+        categories = {}
+
+        for k, v in self._slices.items():
+            categories[v[0].category] = 0
+        
+        for k, v in self._slices.items():
+            categories[v[0].category] += len(v[0])
+
+        return categories

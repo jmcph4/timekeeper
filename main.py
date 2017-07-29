@@ -5,18 +5,21 @@ from timekeeper import log
 
 DEFAULT_DB_PATH = ".timekeeper.db"
 
+COL_WIDTH = 15
+
 def print_splash():
     """
     Prints the splash text
     """
-    splash = "Timekeeper 0.0.1\n"
+    splash = "Timekeeper 0.2\n"
     splash += "-" * 80 + "\n"
-    splash += "    view - views current_log\n"
-    splash += "    save - saves current_log\n"
-    splash += "    load - loads current_log\n"
-    splash += "    new  - adds new slice\n"
-    splash += "    quit - quits\n"
-    splash += "    help - displays help text\n"
+    splash += "    view    - views current_log\n"
+    splash += "    save    - saves current_log\n"
+    splash += "    load    - loads current_log\n"
+    splash += "    new     - adds new slice\n"
+    splash += "    report  - displays aggregates\n"
+    splash += "    quit    - quits\n"
+    splash += "    help    - displays help text\n"
 
     print(splash)
 
@@ -38,8 +41,8 @@ def save_prompt(current_log):
     """
     Prompts the user to confirm save operation then file path to database file
     """
-    save_choice = input("Save? (Y/N) ")
-
+    save_choice = input("Save? ")
+    
     if save_choice == "Y":
         db_path = input("Enter filepath (" + DEFAULT_DB_PATH + "): ")
 
@@ -52,7 +55,7 @@ def load_prompt(current_log):
     """
     Prompts the user to confirm load operation then file path to database file
     """
-    load_choice = input("Load (Y/N)?")
+    load_choice = input("Load (Y/N)? ")
 
     if load_choice == "Y":
         db_path = input("Enter filepath (" + DEFAULT_DB_PATH + "): ")
@@ -95,6 +98,11 @@ def help_text():
     help_text += "    save the new slice to disk (use `save`"
     help_text += " for this).\n\n"
 
+    # report
+    help_text += "report\n"
+    help_text += "    Prints an aggregate of time spent (in minutes) for each"
+    help_text += " category in the log.\n\n"
+
     # quit
     help_text += "quit\n"
     help_text += "    Exits the program. *All unsaved slices will be lost*.\n\n"
@@ -104,6 +112,18 @@ def help_text():
     help_text += "    Displays this help text.\n\n"
 
     print(help_text)
+
+def print_report(current_log):
+    report = current_log.category_aggregate()
+
+    s = "Category        | Duration (min)  |\n"
+    s += "----------------+-----------------+\n"
+
+    for k, v in report.items():
+        s += k + (COL_WIDTH - len(k) ) * " " + " | " + str(v) + (
+            COL_WIDTH - len(str(v))) * " " + " |\n"
+
+    print(s)
 
 def main():
     current_log = log.Log([])
@@ -125,6 +145,8 @@ def main():
         elif cmd == "new":
             new_prompt(current_log)
             print("-" * 80)
-
+        elif cmd == "report":
+            print_report(current_log)
+            
 if __name__ == "__main__":
     main()

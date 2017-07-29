@@ -1,5 +1,8 @@
 from datetime import datetime
 
+MINUTES_IN_DAY = 60 * 24
+SECONDS_IN_MINUTE = 60
+
 class Slice(object):
     """
     A period of time with a start and an end
@@ -29,12 +32,19 @@ class Slice(object):
         return self._description
 
     def __repr__(self):
-        s = self._start.strftime(self._DT_FMT)
+        s = self._start.strftime(self.DT_FMT)
         s += ", "
-        s += self._end.strftime(self._DT_FMT)
+        s += self._end.strftime(self.DT_FMT)
         s += ", "
         s += self._category
         s += ", "
         s += self._description
 
         return s
+
+    def __len__(self):
+        delta = self._end - self._start
+
+        length = delta.days * MINUTES_IN_DAY + (delta.seconds // SECONDS_IN_MINUTE)
+
+        return length
