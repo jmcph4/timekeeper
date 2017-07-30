@@ -1,6 +1,19 @@
 # CHANGELOG #
 ---
 
+## [0.3.0] - 2017-07-30  ##
+### Added ###
+ - Ranged category-level aggregates (now a datetime range can be specified)
+
+### Changed ###
+ - The `report` command now defaults to the past week-to-date
+
+### Removed ###
+None
+
+### Fixed ###
+None
+
 ## [0.2.0] - 2017-07-30  ##
 ### Added ###
  - category-level reporting

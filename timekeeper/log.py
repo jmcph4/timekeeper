@@ -104,6 +104,10 @@ class Log(object):
         return length
 
     def category_aggregate(self):
+        """
+        Returns a dictionary associating each category in the log with the total
+        number of minutes attributed to it
+        """
         categories = {}
 
         for k, v in self._slices.items():
@@ -113,3 +117,18 @@ class Log(object):
             categories[v[0].category] += len(v[0])
 
         return categories
+
+    def ranged_category_aggregate(self, start, end):
+        """
+        Same as category_aggregate() but only applies to slices within the range
+        [start, end]
+        """
+        new_slices = []
+
+        for k, v in self.slices.items():
+            if k > start and k < end:
+                new_slices.append(v)
+
+        tmp = Log(new_slices)
+
+        return tmp.category_aggregate()

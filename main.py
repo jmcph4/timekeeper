@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from timekeeper import slice
 from timekeeper import log
@@ -11,7 +11,7 @@ def print_splash():
     """
     Prints the splash text
     """
-    splash = "Timekeeper 0.2\n"
+    splash = "Timekeeper 0.3.0\n"
     splash += "-" * 80 + "\n"
     splash += "    view    - views current_log\n"
     splash += "    save    - saves current_log\n"
@@ -101,7 +101,8 @@ def help_text():
     # report
     help_text += "report\n"
     help_text += "    Prints an aggregate of time spent (in minutes) for each"
-    help_text += " category in the log.\n\n"
+    help_text += " category in the log\n"
+    help_text += "    *for the past week*.\n\n"
 
     # quit
     help_text += "quit\n"
@@ -114,9 +115,14 @@ def help_text():
     print(help_text)
 
 def print_report(current_log):
-    report = current_log.category_aggregate()
+    # calculate date offsets
+    now = datetime.now()
+    week_ago = now - timedelta(days=7)
+    
+    report = current_log.ranged_category_aggregate(week_ago, now)
 
-    s = "Category        | Duration (min)  |\n"
+    s = "For " + str(week_ago) + " to " + str(now) + "\n"
+    s += "Category        | Duration (min)  |\n"
     s += "----------------+-----------------+\n"
 
     for k, v in report.items():
